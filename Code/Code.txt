@@ -1,0 +1,59 @@
+###Ternary plots 
+library(vcd)
+otu=read.table("Ternary_Diagram_CM.txt",header=T)  
+otu1=otu[,c(1:3)]	
+pch <- otu$pch		
+col <- as.character(otu$col)
+pdf(file="Ternary_Diagram_CM.pdf")
+ternaryplot(otu1, scale=1, 	#scale,row sums scale to be used
+	dimnames=NULL,	#dimension labels (defaults to the column names of x),
+	dimnames_position=c("corner","edge","none"),dimnames_color="black", 	#position and color of dimension labels
+	id=NULL, id_color = "black",	#optional labels to be plotted below the plot symbols. 
+	id_just=c("center", "center"),	#character vector of length 1 or 2 indicating the justi?cation of these labels
+	coordinates=FALSE,	#if TRUE, the coordinates of the points are plotted below them. coordinates and id are mutual exclusive.
+	grid=TRUE,	#if TRUE, a grid is plotted. May optionally be a string indicating the line type (default: "dotted").
+	grid_color="gray",
+	labels="outside",labels_color="darkgray",	#position and color of the grid labels,labels=c("inside", "outside", "none").
+	border="black",bg="white",	#border,color of the triangle border;bg,triangle background
+	pch=pch,	#plotting character. 
+	cex=1,	#a numerical value giving the amount by which plotting text and symbols should be scaled relative to the default. Ignored for the symbol size if prop_size is not FALSE.
+	prop_size=FALSE,	#if TRUE, the symbol size is plotted proportional to the row sum of the three variables, i.e., represents the weight of the observation.
+	col=col,	#plotting color
+	main="ternary plot"	#main title
+	)
+
+
+
+
+
+
+#####Niche breadth
+##comun: A community table with samples as rows and taxa as columns. 
+Com.niche <- function(comun, stats=TRUE){
+    require(spaa)
+    comun<-comun[,colSums(comun)>0]
+    B<-niche.width(comun,method="levins")
+    B_com<-1:nrow(comun)
+    for(i in 1:nrow(comun)){
+       a<-comun[i,]
+       a<-a[a>0]
+       B_com[i]<-mean(as.numeric(B[,names(a)]))
+    }
+    return(B_com)
+}
+
+
+
+
+
+##Bubble plots
+library(ggplot2)
+Data <- read.table("M.txt",header = T,sep = "\t")
+attach(Data)
+names(Data)
+p <- ggplot(Data, aes(x = Impact,y = names)) + 
+  geom_point(aes(size=PP,color=PP)) + 
+  scale_colour_gradient(low="red",high="green") + 
+  theme_bw()
+p <- p + labs(size="Compound number",x="Impact",y="Pathway Name",title="Pathway Compound")
+
